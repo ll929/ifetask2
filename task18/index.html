@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task 17</title>
+    <style type="text/css">
+        form{
+            width: 500px;
+            text-align: center;
+            margin: 0 auto;
+        }
+        #queue-box{
+            width: 800px;
+            text-align: center;
+            margin: 10px auto 10px auto;
+        }
+        #queue-box>div{
+            display: inline-block;
+            margin: 5px;
+            height: 50px;
+            color: #fff;
+            font: 25px/50px "黑体", STHeiti;
+            background-color: #ff0000;
+            padding: 0 10px 0 10px;
+            box-shadow: 0 0 6px 2px #ff0000 ;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <form id="form" action="javascript:void(0)">
+        <input type="number" id="ipt" placeholder="请输入数字">
+        <button id="leftEnqueue">左侧入</button>
+        <button id="rightEnqueue">右侧入</button>
+        <button id="leftDequeue">左侧出</button>
+        <button id="rightDequeue">右测出</button>
+    </form>
+    <div id="queue-box"></div>
+</div>
+<script src="task.js"></script>
+</body>
+</html>

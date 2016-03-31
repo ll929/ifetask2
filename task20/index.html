@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task 20</title>
+    <style type="text/css">
+        #form{
+            margin: 0 auto;
+            width: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-flow: row wrap;
+        }
+        #btn-box-1{
+            width: 500px;
+        }
+        #btn-box-2{
+            width: 230px;
+        }
+        #queue-box{
+            width: 800px;
+            margin: 10px auto 10px auto;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            flex-flow: row wrap;
+        }
+        #ipt{
+            width: 800px;
+            height: 50px;
+            resize: none;
+            margin-bottom: 5px;
+        }
+        #searchIpt{
+            width: 170px;
+        }
+        #queue-box>div{
+            margin: 10px;
+            height: 50px;
+            color: #fff;
+            font: 25px/50px "黑体", STHeiti;
+            background-color: #ff0000;
+            padding: 0 10px 0 10px;
+            box-shadow: 0 0 6px 2px #ff0000 ;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <form id="form" action="javascript:void(0)">
+        <textarea id="ipt" placeholder="请输入内容，不同内容以回车，逗号（全角半角均可），顿号，空格（全角半角、Tab等均可）等符号作为间隔"></textarea>
+        <div id="btn-box-1">
+            <button id="leftEnqueue">左侧入</button>
+            <button id="rightEnqueue">右侧入</button>
+            <button id="leftDequeue">左侧出</button>
+            <button id="rightDequeue">右侧出</button>
+        </div>
+        <div id="btn-box-2">
+            <input id="searchIpt" type="text" placeholder="请输入查询内容">
+            <button id="search">查 询</button>
+        </div>
+    </form>
+    <div id="queue-box"></div>
+</div>
+<script src="task.js"></script>
+</body>
+</html>

@@ -78,15 +78,25 @@ function randomData(){
 }
 
 /**
+ *清空队列
+ */
+function clearData(){
+    dataStore = []
+}
+
+/**
  *冒泡排序
  */
 function bubbleSort(arr){
     var numElements = arr.length,   //获取队列的长度
         temp;
     outer();
+
+    //每次循环往后移动一个最大的数
     function outer(){
         if(numElements >= 2){
             var i = 0;
+            //相邻两个数据对比，如前面大于后面则交换
             function inner(){
                 if(i < numElements){
                     queueBox.getElementsByClassName(i+1)[0].style.backgroundColor = "#0f0";
@@ -98,7 +108,7 @@ function bubbleSort(arr){
                         renderQueueProcess(i);
                     }
                     i++;
-                    setTimeout(inner,30);
+                    setTimeout(inner,60);
                 }else {
                     outer();
                 }
@@ -130,7 +140,6 @@ function renderQueue(){
 
     //遍历dataStore中的所有数据，渲染页面
     for(var key in dataStore){
-        //console.log(dataStore[key])
         queueHtml += "<div class="+key+" style='height: "+dataStore[key]*3+"px'></div>"
     }
     queueBox.innerHTML = queueHtml;
@@ -170,6 +179,9 @@ function changeQueue(){
                         alert("当前队列为空，请添加新的数字！")
                     }
                     return false;
+                case "clearData":
+                    clearData();
+                    break;
             }
             renderQueue();
         }

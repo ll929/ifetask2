@@ -2,40 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>IFE JavaScript Task 18</title>
+    <title>IFE JavaScript Task 19</title>
     <style type="text/css">
         form{
-            width: 500px;
+            width: 800px;
             text-align: center;
             margin: 0 auto;
         }
+        #ipt{
+            width: 170px;
+        }
         #queue-box{
+            border:  3px solid #9f9f9f;
             width: 800px;
-            margin: 10px auto 10px auto;
+            height: 350px;
+            margin: 50px auto 10px auto;
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            flex-flow: row wrap;
+            flex-flow: row nowrap;
         }
         #queue-box>div{
-            margin: 10px;
-            height: 50px;
+            width: 10px;
             color: #fff;
-            font: 25px/50px "黑体", STHeiti;
-            background-color: #ff0000;
-            padding: 0 10px 0 10px;
-            box-shadow: 0 0 6px 2px #ff0000 ;
+            background-color: #f00;
+            border: 1px solid #fff;
         }
     </style>
 </head>
 <body>
 <div id="wrap">
     <form id="form" action="javascript:void(0)">
-        <input type="text" id="ipt" placeholder="请输入数字">
+        <input type="text" id="ipt" placeholder="请输入10-100之间的数字">
         <button id="leftEnqueue">左侧入</button>
         <button id="rightEnqueue">右侧入</button>
         <button id="leftDequeue">左侧出</button>
         <button id="rightDequeue">右侧出</button>
+        <button id="randomData">随机60组数据</button>
+        <button id="sortData">排序</button>
     </form>
     <div id="queue-box"></div>
 </div>

@@ -19,7 +19,7 @@ function leftEnqueue(){
     }else {
         dataStore = tempInputValue
             .trim()   //获得的文本域内容首位去空字符串
-            .split(/[\s,，;:；：!！"“”()=\{\}\[\]，。。\.\/\\\|]+/)    //以标点符号或者空字符分割，返回数组
+            .split(/[\s,，;:；：!！？?'‘’、"“”()=\{\}\[\]，。。\.\/\\\|]+/)    //以标点符号或者空字符分割，返回数组
             .concat(dataStore);   //与原数组合并
     }
 }
@@ -34,7 +34,7 @@ function rightEnqueue(){   //同上（15-24行）
         dataStore = dataStore
             .concat(tempInputValue
                 .trim()
-                .split(/[\s,，;:；：!！"“”()=\{\}\[\]，。。\.\/\\\|]+/));
+                .split(/[\s,，;:；：!！？?'‘’、"“”()=\{\}\[\]，。。\.\/\\\|]+/));
     }
 }
 
@@ -133,6 +133,7 @@ function changeQueue(){
                     renderSearchString();
                     return false;
             }
+            input.value = "";
             renderQueue();
         }
     })

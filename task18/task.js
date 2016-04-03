@@ -96,6 +96,7 @@ function changeQueue(){
                     rightDequeue();
                     break;
             }
+            input.value = "";
             renderQueue();
         }
     })

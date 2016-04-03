@@ -7,24 +7,15 @@
         #form{
             margin: 0 auto;
             width: 800px;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            flex-flow: row wrap;
+            overflow: hidden;
         }
         #btn-box-1{
             width: 500px;
+            float: left;
         }
         #btn-box-2{
             width: 230px;
-        }
-        #queue-box{
-            width: 800px;
-            margin: 10px auto 10px auto;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            flex-flow: row wrap;
+            float: right;
         }
         #ipt{
             width: 800px;
@@ -35,7 +26,13 @@
         #searchIpt{
             width: 170px;
         }
+        #queue-box{
+            width: 800px;
+            margin: 10px auto 10px auto;
+            text-align: center;
+        }
         #queue-box>div{
+            display: inline-block;
             margin: 10px;
             height: 50px;
             color: #fff;

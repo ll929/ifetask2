@@ -183,6 +183,7 @@ function changeQueue(){
                     clearData();
                     break;
             }
+            input.value = "";
             renderQueue();
         }
     }

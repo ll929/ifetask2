@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task 22</title>
+    <style type="text/css">
+        #wrap{
+            width: 400px;
+            margin:  0 auto;
+        }
+        #wrap div{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+        }
+        #binaryTreeRoot{
+            width: 100%;
+            height: 95px;
+            border: 2px solid #000;
+            box-sizing: border-box;
+            text-align: center;
+            padding: 10px 5px 10px 5px;
+        }
+        #binaryTreeRoot div{
+            width: 50%;
+            height: 100%;
+            border: 2px solid #000;
+            box-sizing: border-box;
+            margin: 0 1px 0 1px;
+            padding: 10px 5px 10px 5px;
+        }
+        #wrap #btn-box{
+            margin-top: 30px;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <div id="binaryTreeRoot">
+        <div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
+            <div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+    </div>
+    <div id="btn-box">
+        <button id="preOrder">先序遍历</button>
+        <button id="inOrder">中序遍历</button>
+        <button id="postOrder">后序遍历</button>
+    </div>
+</div>
+<script src="task.js"></script>
+</body>
+</html>

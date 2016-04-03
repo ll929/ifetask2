@@ -3,17 +3,18 @@
  */
 
 /**
- *创建一个hobbies类
+ *创建一个Hobbies类
  */
-function Hobbies(){
+function Hobbies(ipt,htmlBox,boole){
     this.dataStore = [];   //存放数据
-    this.ipt = undefined;   //当前的输入框
-    this.htmlBox = undefined;   //当前显示的div
+    this.ipt = ipt;   //当前的输入框
+    this.htmlBox = htmlBox;   //当前显示的div
     this.add = add;   //添加数据
     this.removeDuplicateData = removeDuplicateData;   //数据去重
     this.delete = deleteData;   //点击删除
     this.render = render;   //数据渲染
-    this.dataChangeClear = false;   //默认false，每次添加新数据，原数据不清空；如果为true，每次添加新数据前原数据清空
+    this.eventListener = eventListener;   //监测何时添加数据
+    this.dataChangeClear = boole;   //默认false，每次添加新数据，原数据不清空；如果为true，每次添加新数据前原数据清空
 }
 
 /**
@@ -35,7 +36,7 @@ function add(){
 }
 /**
  * 数据去重
- * @param tempArr  缓存数据，有重复内容
+ * @param tempArr 缓存数据，有重复内容
  */
 function removeDuplicateData(tempArr){
     for (var i = 0;i < tempArr.length;i++){
@@ -81,51 +82,37 @@ function deleteData(){
     })
 }
 
-/*
-* 第一个输入框实例化一个Hobbies
-*/
-var tagHobbies = new Hobbies();
-tagHobbies.ipt = document.getElementById("ipt");
-tagHobbies.htmlBox = document.getElementById("queue-box-1");
-tagHobbies.delete();
-
-/**
- * 点击按钮事件
- */
-function changeIpt(){
-    tagHobbies.ipt.onkeydown = function(e){
-        if(e.keyCode == 32 || e.keyCode == 13 || e.keyCode == 188){
-            tagHobbies.add();
-            tagHobbies.ipt.value = "";
-            tagHobbies.render();
-        }
-    }
-}
-
-/*
- * 第二个输入框实例化一个Hobbies
- */
-var textAreaHobbies = new Hobbies();
-textAreaHobbies.ipt = document.getElementById("iptArea");
-textAreaHobbies.htmlBox = document.getElementById("queue-box-2");
-textAreaHobbies.dataChangeClear = true;
-textAreaHobbies.delete();
-
 /**
  * 监测何时添加数据
+ * @param target 监测目标
+ * @param eventType 监测事件类型
  */
-var confirmBtn = document.getElementById("confirmBtn");
-function clickConfirmBtn(){
-    //添加监听事件
-    confirmBtn.onclick = function(){
-        textAreaHobbies.add();
-        textAreaHobbies.ipt.value = "";
-        textAreaHobbies.render();
-    };
+function eventListener(target,eventType){
+    var t = this;
+    target.addEventListener(eventType,function(e){
+        if(eventType == "keydown"){
+            if(e.keyCode != 32 && e.keyCode != 13 && e.keyCode != 188){
+                return false;
+            }
+        }
+        t.add();
+        t.ipt.value = "";
+        t.render();
+    })
 }
 
 function init(){
-    clickConfirmBtn();
-    changeIpt();
+    /*
+     * 第一个输入框实例化一个Hobbies
+     */
+    var tagHobbies = new Hobbies(document.getElementById("ipt"),document.getElementById("queue-box-1"));
+    tagHobbies.eventListener(this.ipt,"keydown");
+    tagHobbies.delete();
+    /*
+     * 第二个输入框实例化一个Hobbies
+     */
+    var textAreaHobbies = new Hobbies(document.getElementById("iptArea"),document.getElementById("queue-box-2"),true);
+    textAreaHobbies.eventListener(document.getElementById("confirmBtn"),"click");
+    textAreaHobbies.delete();
 }
 init();

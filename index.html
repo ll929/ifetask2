@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task</title>
+    <style type="text/css">
+        #wrap{
+            width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        #wrap{
+            list-style-position: inside;
+            font: 26px "黑体";
+        }
+        #wrap li{
+            margin: 5px 0 5px 0;
+        }
+        #wrap li a{
+            margin-left: 20px;
+        }
+        #wrap li span{
+            color: #f00;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <h1>IFE JavaScript Task</h1>
+    <ul id="taskList">
+    </ul>
+</div>
+<script>
+   var ulList = document.getElementById("taskList"),
+           ulHtml = "";
+    for(var i = 13; i <= 22 ;i++){
+        ulHtml += "<li><span>task"+i+"</span><a href='https://ll929.github.io/ifetask2/task"+i+"/index.html' target='_blank'>demo</a><a href='https://github.com/ll929/ifetask2/tree/gh-pages/task"+i+"' target='_blank'>源码</a></li>"
+    }
+    ulList.innerHTML = ulHtml;
+</script>
+</body>
+</html>

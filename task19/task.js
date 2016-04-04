@@ -91,7 +91,6 @@ function bubbleSort(arr){
     var numElements = arr.length,   //获取队列的长度
         temp;
     outer();
-
     //每次循环往后移动一个最大的数
     function outer(){
         if(numElements >= 2){
@@ -117,6 +116,7 @@ function bubbleSort(arr){
             numElements--
         }
         else {
+            queueBox.getElementsByClassName("0")[0].style.backgroundColor = "#0f0";
             changeQueue();
             deleteAnyData();
             alert("排序完成！")

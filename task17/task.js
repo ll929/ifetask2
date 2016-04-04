@@ -60,12 +60,12 @@ function renderChart() {
         chartHtmlChild,
         fragment = document.createDocumentFragment();   //创建文档碎片节点
     chartWrap.innerHTML = "";   //初始化页面
-
     //遍历charData中的所有数据，创建div节点并设置其样式，添加到fragment中
     for (var key in chartData){
         chartHtmlChild = document.createElement("div");
         chartHtmlChild.style.width = chartDivWidth;
         chartHtmlChild.style.height = chartData[key];
+        chartHtmlChild.setAttribute("title",key+"空气质量指数："+chartData[key])
         chartHtmlChild.style.backgroundColor = getColorWarn(chartData[key]);
         fragment.appendChild(chartHtmlChild);
     }
@@ -167,17 +167,17 @@ function initAqiChartData() {
             chartDivWidth = 30;   //周图表宽度设置为30px
             var weekIndex = 1;   //默认chartData属性，第一周
             chartData = {};   //清空chartData
-            chartData[weekIndex] = [];   //将chartData[weekIndex]初始化为空数组
+            chartData["第"+weekIndex+"周"] = [];   //将chartData[weekIndex]初始化为空数组
 
             //遍历当前选中的城市中的数据
             for (var key in aqiSourceData[pageState.nowSelectCity] ){
                 var timeDate = new Date(Date.parse(key.replace(/-/g,"/"))).getDay();   //获取当天是周几
-                chartData[weekIndex].push(aqiSourceData[pageState.nowSelectCity][key]);   //将数据添加到chartData[weekIndex]中
+                chartData["第"+weekIndex+"周"].push(aqiSourceData[pageState.nowSelectCity][key]);   //将数据添加到chartData[weekIndex]中
 
                 //如果遍历到周日，weekIndex+1，即chartData的属性增加一个周
                 if(timeDate == 0){
                     weekIndex ++;
-                    chartData[weekIndex] = [];   //初始化chartData属性增加的一个周为空数组
+                    chartData["第"+weekIndex+"周"] = [];   //初始化chartData属性增加的一个周为空数组
                 }
             }
             //调用求平均值函数，将每周的数据求平均值
@@ -195,9 +195,9 @@ function initAqiChartData() {
                 //如果当前的月份不是默认的月份
                 if(monthIndexNow != monthIndex){
                     monthIndex = monthIndexNow;   //将当前的月份赋值给默认的月份
-                    chartData[monthIndex] = []   //将chartData[monthIndex]属性初始化为空数组
+                    chartData[monthIndex+"月"] = []   //将chartData[monthIndex]属性初始化为空数组
                 }
-                chartData[monthIndex].push(aqiSourceData[pageState.nowSelectCity][key]);   //将数据添加到chartData[monthIndex]中
+                chartData[monthIndex+"月"].push(aqiSourceData[pageState.nowSelectCity][key]);   //将数据添加到chartData[monthIndex]中
             }
             //调用求平均值函数，将每月的数据求平均值
             getAverageData(chartData);
@@ -215,7 +215,7 @@ function getAverageData(data){
         for(var k in data[key]){
             DataCount += data[key][k];
         }
-        chartData[key] = DataCount/data[key].length;
+        chartData[key] = Math.round(DataCount/data[key].length);
     }
 }
 

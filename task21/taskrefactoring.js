@@ -6,6 +6,11 @@
  *封装Hobbies类
  */
 (function(){
+    /**
+     * @param ipt 获取文本的元素
+     * @param htmlBox 用来显示的元素
+     * @param boole 布尔类型
+     */
     function Hobbies(ipt,htmlBox,boole){
         this.dataStore = [];   //存放数据
         this.ipt = ipt;   //当前的输入框

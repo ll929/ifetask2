@@ -160,8 +160,6 @@
                 if(this.i > 0 && this.i <= this.orderNode.length){
                     this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace(currentClassName,"");
                 }
-                this.i = 0;
-                this.orderNode = [];
             }
         }
         if(searchClassName){
@@ -175,6 +173,8 @@
         if(selectClassName){
             this.selectNode.className = this.selectNode.className.replace(selectClassName,"");
         }
+        this.i = 0;
+        this.orderNode = [];
     }
 })();
 /**
@@ -201,6 +201,8 @@ function clickBtn(target,tree){
                         }else {
                             return false;
                         }
+                    }else {
+                        tree.clear();
                     }
                 }
                 if(tree.searchResult.length > 0){

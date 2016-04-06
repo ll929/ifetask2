@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task 25</title>
+    <style type="text/css">
+        #wrap{
+            width: 800px;
+            margin: 0 auto;
+        }
+        #treeWrap{
+            width: 100%;
+            font: 14px "黑体";
+        }
+        #treeWrap,#treeWrap div{
+            color: #000;
+        }
+        #treeWrap div{
+            background-color: #fff;
+        }
+        #btn-search-wrap{
+            margin-top: 30px;
+        }
+        #btn-search-wrap>div{
+            display: inline-block;
+        }
+        #orderBtn{
+            float: left;
+        }
+        #search{
+            float: right;
+        }
+        #treeRoot.select,#treeRoot div.select{
+            color: #75b86b;
+        }
+        #treeRoot.fold,#treeRoot div.fold{
+            background: url("images/zhedie.png") no-repeat;
+        }
+        #treeRoot.current,#treeRoot div.current{
+            background-color: #0ff;
+        }
+        #treeRoot.search,#treeRoot div.search{
+            color: #f00;
+            border-color: #f00;
+        }
+        #treeRoot,#treeRoot div{
+            padding-left: 20px;
+            background: url("images/zhankai.png") no-repeat;
+        }
+        #treeRoot div{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <div id="treeWrap">
+        <div id="treeRoot">百度
+            <div>糯米
+                <div>美食
+                    <div>小吃快餐</div>
+                    <div>自助餐</div>
+                    <div>海鲜</div>
+                    <div>火锅</div>
+                </div>
+                <div>电影</div>
+                <div>休闲娱乐
+                    <div>ktv</div>
+                    <div>足疗按摩</div>
+                </div>
+            </div>
+            <div>新闻
+                <div>百家
+                    <div>巨头</div>
+                    <div>人物</div>
+                    <div>电商</div>
+                </div>
+                <div>财经
+                    <div>股票
+                        <div>大盘</div>
+                    </div>
+                    <div>理财</div>
+                </div>
+            </div>
+            <div>地图</div>
+        </div>
+    </div>
+    <div id="btn-search-wrap">
+        <div id="orderBtn">
+            <button id="preOrder">遍历1</button>
+            <button id="inOrder">遍历2</button>
+            <button id="postOrder">遍历3</button>
+            <button id="toggleFold">全部展开</button>
+            <button id="delete">删除</button>
+        </div>
+        <div id="search">
+            <input type="text" id="ipt" placeholder="请输入查找或添加的内容">
+            <button id="add">添加</button>
+            <button id="searchBtn1">查找1</button>
+            <button id="searchBtn2">查找2</button>
+            <button id="searchBtn3">查找3</button>
+        </div>
+    </div>
+</div>
+<script src="task.js"></script>
+</body>
+</html>

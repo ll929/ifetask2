@@ -33,7 +33,7 @@
     function show(foldClassName,currentClassName,searchValue,searchClassName){
         //将this赋值t，如果直接用this，在经过setTimeout()函数后this会指向window
         var t = this;
-        if(this.i <= this.orderNode.length){
+        if(this.i <= this.orderNode.length){console.log(this.i)
             if(this.i > 0) {
                 if(this.orderNode[this.i-1].className != searchClassName){
                     this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace(currentClassName,"");
@@ -200,8 +200,6 @@
                 if(this.i > 0 && this.i <= this.orderNode.length){
                     this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace(currentClassName,"");
                 }
-                this.i = 0;
-                this.orderNode = [];
             }
         }
         if(searchClassName){
@@ -213,8 +211,12 @@
             }
         }
         if(selectClassName){
-            this.selectNode.className = this.selectNode.className.replace(selectClassName,"");
+            if(this.selectNode){
+                this.selectNode.className = this.selectNode.className.replace(selectClassName,"");
+            }
         }
+        this.i = 0;
+        this.orderNode = [];
     }
 
     /**
@@ -227,7 +229,9 @@
         if(isFold){
             for (var i=0;i<this.orderNode.length;i++){
                 this.orderNode[i].style.display = "block";
-                this.orderNode[i].className += (" "+foldClassName);
+                if(this.orderNode[i].className.indexOf(foldClassName) == -1){
+                    this.orderNode[i].className += (" "+foldClassName)
+                }
             }
         }else {
             for (var i=0;i<this.orderNode.length;i++){
@@ -262,6 +266,8 @@ function clickBtn(target,tree){
                     }else {
                         return false;
                     }
+                }else {
+                    tree.clear(false,false,"select");
                 }
                 if(tree.searchResult.length > 0){
                     //清除正在执行的遍历过程，并还原select样式

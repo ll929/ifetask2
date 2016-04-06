@@ -38,11 +38,11 @@
                 }
             }
             if(this.i < this.orderNode.length){
-                this.orderNode[this.i].className += currentClassName;
+                this.orderNode[this.i].className += (" "+currentClassName);
                 if(searchValue){
                     if(this.orderNode[this.i].firstChild.data.trim() == searchValue){
                         this.searchResult.push(this.orderNode[this.i]);
-                        this.orderNode[this.i].className += searchClassName;
+                        this.orderNode[this.i].className += (" "+searchClassName);
                     }
                 }
             }
@@ -148,32 +148,32 @@
 
     /**
      * 清除遍历或者查找过程，或者还原样式，参数都是布尔类型
-     * @param ordre 如果为true，停止遍历过程，并取消current样式
-     * @param search 如果为true，取消search样式
-     * @param select 如果为true，取消select样式
+     * @param ordre 如果为有参数，停止遍历过程，并取消current样式
+     * @param search 如果为有参数，取消search样式
+     * @param select 如果为参数，取消select样式
      */
-    function clear(ordre,search,select) {
-        if(ordre){
+    function clear(currentClassName,searchClassName,selectClassName) {
+        if(currentClassName){
             if(this.timeOut){
                 clearTimeout(this.timeOut);
                 this.timeOut = undefined;
                 if(this.i > 0 && this.i <= this.orderNode.length){
-                    this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace("current","");
+                    this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace(currentClassName,"");
                 }
                 this.i = 0;
                 this.orderNode = [];
             }
         }
-        if(search){
+        if(searchClassName){
             if(this.searchResult.length > 0){
                 for (var key in this.searchResult){
-                    this.searchResult[key].className = this.searchResult[key].className.replace("search","");
+                    this.searchResult[key].className = this.searchResult[key].className.replace(searchClassName,"");
                 }
                 this.searchResult = [];
             }
         }
-        if(select){
-            this.selectNode.className = this.selectNode.className.replace("select","");
+        if(selectClassName){
+            this.selectNode.className = this.selectNode.className.replace(selectClassName,"");
         }
     }
 })();
@@ -191,13 +191,13 @@ function clickBtn(target,tree){
             if(btn != "ipt" && btn !="search" && btn != "orderBtn"){
                 //清除正在执行的遍历过程
                 if(btn == "stop"){
-                    tree.clear(true)
+                    tree.clear("current")
                 }else {
                     if(tree.timeOut){
                         var r = confirm("当前操作会停止正在执行的遍历或查找，确定吗？");
                         if(r){
                             //清除正在执行的遍历过程
-                            tree.clear(true)
+                            tree.clear("current")
                         }else {
                             return false;
                         }
@@ -205,7 +205,7 @@ function clickBtn(target,tree){
                 }
                 if(tree.searchResult.length > 0){
                     //清除正在执行的遍历过程，并还原select样式
-                    tree.clear(true,true)
+                    tree.clear("current","search")
                 }
                 switch (btn){
                     case "searchBtn1":

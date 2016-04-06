@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IFE JavaScript Task 24</title>
+    <style type="text/css">
+        #wrap{
+            width: 800px;
+            margin: 0 auto;
+        }
+        #treeWrap{
+            width: 100%;
+            height: 90px;
+            font: 14px "黑体";
+        }
+        #treeWrap,#treeWrap div{
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            color: #000;
+        }
+        #treeWrap div{
+            height: 100%;
+            box-sizing: border-box;
+            border: 2px solid #000;
+            text-align: center;
+            padding: 5px 1px 5px 1px;
+            margin: 1px;
+            background-color: #fff;
+        }
+        #btn-search-wrap{
+            margin-top: 30px;
+        }
+        #btn-search-wrap>div{
+            display: inline-block;
+        }
+        #orderBtn{
+            float: left;
+        }
+        #search{
+            float: right;
+        }
+        #treeRoot.select,#treeRoot div.select{
+            background-color: #72b16a;
+            box-shadow:inset 2px 2px 5px #000;
+        }
+        #treeRoot.current,#treeRoot div.current{
+            background-color: #0ff;
+        }
+        #treeRoot.search,#treeRoot div.search{
+            color: #f00;
+            border-color: #f00;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <div id="treeWrap">
+        <div id="treeRoot">百度
+            <div>糯米
+                <div>美食
+                    <div>小吃快餐</div>
+                    <div>自助餐</div>
+                    <div>海鲜</div>
+                    <div>火锅</div>
+                </div>
+                <div>电影</div>
+                <div>休闲娱乐
+                    <div>ktv</div>
+                    <div>足疗按摩</div>
+                </div>
+            </div>
+            <div>新闻
+                <div>百家
+                    <div>巨头</div>
+                    <div>人物</div>
+                    <div>电商</div>
+                </div>
+                <div>财经
+                    <div>股票
+                        <div>大盘</div>
+                    </div>
+                    <div>理财</div>
+                </div>
+            </div>
+            <div>地图</div>
+        </div>
+    </div>
+    <div id="btn-search-wrap">
+        <div id="orderBtn">
+            <button id="preOrder">遍历1</button>
+            <button id="inOrder">遍历2</button>
+            <button id="postOrder">遍历3</button>
+            <button id="stop">停止遍历or查找</button>
+            <button id="delete">删除</button>
+        </div>
+        <div id="search">
+            <input type="text" id="ipt" placeholder="请输入查找或添加的内容">
+            <button id="add">添加</button>
+            <button id="searchBtn1">查找1</button>
+            <button id="searchBtn2">查找2</button>
+            <button id="searchBtn3">查找3</button>
+        </div>
+    </div>
+</div>
+<script src="task.js"></script>
+</body>
+</html>

@@ -21,36 +21,33 @@
         this.add = add;   //添加节点函数
         this.clear = clear;   //清除遍历或者查找过程，或者还原样式
         this.foldAll = foldAll;
+        this.style = {};   //存放需要的样式
     }
     window.Tree = Tree;   //公开一个接口
     /**
      * 显示树遍历或者查找过程
-     * @param foldClassName 展开样式名
-     * @param currentClassName 遍历到当前节点添加的样式名
      * @param searchValue 要查找的值，可选
-     * @param searchClassName 查到的节点添加的样式名
      */
-    function show(foldClassName,currentClassName,searchValue,searchClassName){
+    function show(searchValue){
         //将this赋值t，如果直接用this，在经过setTimeout()函数后this会指向window
         var t = this;
-        if(this.i <= this.orderNode.length){console.log(this.i)
+        if(this.i <= this.orderNode.length){
             if(this.i > 0) {
-                if(this.orderNode[this.i-1].className != searchClassName){
-                    this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace(currentClassName,"");
+                if(this.orderNode[this.i-1].className != this.style.search){
+                    this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace(this.style.current,"");
                 }
             }
             if(this.i < this.orderNode.length){
-
-                if(this.orderNode[this.i].className.indexOf(foldClassName) == -1) {
-                    this.orderNode[this.i].className += (" " + foldClassName);
+                if(this.orderNode[this.i].className.indexOf(this.style.fold) == -1) {
+                    this.orderNode[this.i].className += (" " + this.style.fold);
                     if (this.orderNode[this.i].children.length > 0) {
                         for (var i = 0; i < this.orderNode[this.i].children.length; i++) {
                             this.orderNode[this.i].children[i].style.display = "block";
                         }
                     }
                     var orderParent = this.orderNode[this.i].parentNode;
-                    while(orderParent != this.root.parentNode && orderParent.className.indexOf(foldClassName) == -1){
-                        orderParent.className += (" " + foldClassName);
+                    while(orderParent != this.root.parentNode && orderParent.className.indexOf(this.style.fold) == -1){
+                        orderParent.className += (" " + this.style.fold);
                         for (var i = 0; i < orderParent.children.length; i++) {
                             orderParent.children[i].style.display = "block";
                         }
@@ -59,16 +56,16 @@
                 }
 
 
-                this.orderNode[this.i].className += (" "+currentClassName);
+                this.orderNode[this.i].className += (" "+this.style.current);
                 if(searchValue){
                     if(this.orderNode[this.i].firstChild.data.trim() == searchValue){
                         this.searchResult.push(this.orderNode[this.i]);
-                        this.orderNode[this.i].className += (" "+searchClassName);
+                        this.orderNode[this.i].className += (" "+this.style.search);
                     }
                 }
             }
             this.i++;
-            this.timeOut = setTimeout(function(){t.show(foldClassName,currentClassName,searchValue,searchClassName)},500)
+            this.timeOut = setTimeout(function(){t.show(searchValue)},500)
         }else {
             this.timeOut = undefined;
             if(searchValue){
@@ -117,33 +114,31 @@
     }
     /**
      *监听被选中的节点，并改变其样式
-     * @param selectClassName 被选中时添加的样式名
-     * @param foldClassName 被展开时添加的样式名
      */
-    function selectEventListener(selectClassName,foldClassName) {
+    function selectEventListener() {
         var t = this;
         this.root.addEventListener("click",function (e) {
             //如果当前节点未选中，点击被选中，反之点击取消选中
-            if(e.target.className.indexOf(selectClassName) == -1){
+            if(e.target.className.indexOf(t.style.select) == -1){
                 if(t.selectNode){
-                    t.selectNode.className = t.selectNode.className.replace(selectClassName,"");
+                    t.selectNode.className = t.selectNode.className.replace(t.style.select,"");
                 }
                 t.selectNode = e.target;
-                t.selectNode.className += (" "+selectClassName);
+                t.selectNode.className += (" "+t.style.select);
             }else {
-                t.selectNode.className = t.selectNode.className.replace(selectClassName,"");
+                t.selectNode.className = t.selectNode.className.replace(t.style.select,"");
                 t.selectNode = null;
             }
             if(e.offsetX <= 16){
-                if(e.target.className.indexOf(foldClassName) == -1){
-                    e.target.className += (" "+foldClassName);
+                if(e.target.className.indexOf(t.style.fold) == -1){
+                    e.target.className += (" "+t.style.fold);
                     if(e.target.children.length > 0){
                         for(var i = 0;i < e.target.children.length;i++){
                             e.target.children[i].style.display  = "block"
                         }
                     }
                 }else {
-                    e.target.className = e.target.className.replace(foldClassName,"");
+                    e.target.className = e.target.className.replace(t.style.fold,"");
                     if(e.target.children.length > 0){
                         for(var i = 0;i < e.target.children.length;i++){
                             e.target.children[i].style.display  = "none"
@@ -179,7 +174,11 @@
         var newNode = document.createElement("div");
         newNode.innerHTML = nodeValue;
         newNode.style.display = "block";
+        newNode.className = this.style.fold;
         if(this.selectNode){
+            for (var i = 0; i < this.selectNode.children.length; i++) {
+                this.selectNode.children[i].style.display = "block";
+            }
             this.selectNode.appendChild(newNode)
         }else {
             alert("请选择要添加子节点的节点！")
@@ -188,31 +187,31 @@
 
     /**
      * 清除遍历或者查找过程，或者还原样式，参数都是布尔类型
-     * @param currentClassName 如果为有参数，停止遍历过程，并取消current样式
-     * @param searchClassName 如果为有参数，取消search样式
-     * @param selectClassName 如果为参数，取消select样式
+     * @param current 如果为true，停止遍历过程，并取消current样式
+     * @param search 如果为true，取消search样式
+     * @param select 如果为true，取消select样式
      */
-    function clear(currentClassName,searchClassName,selectClassName) {
-        if(currentClassName){
+    function clear(current,search,select) {
+        if(current){
             if(this.timeOut){
                 clearTimeout(this.timeOut);
                 this.timeOut = undefined;
                 if(this.i > 0 && this.i <= this.orderNode.length){
-                    this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace(currentClassName,"");
+                    this.orderNode[this.i-1].className = this.orderNode[this.i-1].className.replace(this.style.current,"");
                 }
             }
         }
-        if(searchClassName){
+        if(search){
             if(this.searchResult.length > 0){
-                for (var key in this.searchResult){
-                    this.searchResult[key].className = this.searchResult[key].className.replace(searchClassName,"");
+                for (var i=0;i<this.searchResult.length;i++){
+                    this.searchResult[i].className = this.searchResult[i].className.replace(this.style.search,"");
                 }
                 this.searchResult = [];
             }
         }
-        if(selectClassName){
+        if(select){
             if(this.selectNode){
-                this.selectNode.className = this.selectNode.className.replace(selectClassName,"");
+                this.selectNode.className = this.selectNode.className.replace(this.style.select,"");
             }
         }
         this.i = 0;
@@ -221,25 +220,24 @@
 
     /**
      * 全部折叠或者展开
-     * @param foldClassName 展开样式名
      * @param isFold 布尔值，展开or折叠
      */
-    function foldAll(foldClassName,isFold) {
+    function foldAll(isFold) {
         this.preOrder();
         if(isFold){
             for (var i=0;i<this.orderNode.length;i++){
                 this.orderNode[i].style.display = "block";
-                if(this.orderNode[i].className.indexOf(foldClassName) == -1){
-                    this.orderNode[i].className += (" "+foldClassName)
+                if(this.orderNode[i].className.indexOf(this.style.fold) == -1){
+                    this.orderNode[i].className += (" "+this.style.fold)
                 }
             }
         }else {
             for (var i=0;i<this.orderNode.length;i++){
                 if(this.orderNode[i] != this.root){
                     this.orderNode[i].style.display = "none";
-                    this.orderNode[i].className = this.orderNode[i].className.replace(foldClassName,"");
+                    this.orderNode[i].className = this.orderNode[i].className.replace(this.style.fold,"");
                 }else {
-                    this.orderNode[i].className = this.orderNode[i].className.replace(foldClassName,"");
+                    this.orderNode[i].className = this.orderNode[i].className.replace(this.style.fold,"");
                 }
             }
         }
@@ -262,16 +260,16 @@ function clickBtn(target,tree){
                     var r = confirm("当前操作会停止正在执行的遍历或查找，确定吗？");
                     if(r){
                         //清除正在执行的遍历过程
-                        tree.clear("current")
+                        tree.clear(true)
                     }else {
                         return false;
                     }
                 }else {
-                    tree.clear(false,false,"select");
+                    tree.clear(false,false,true);
                 }
                 if(tree.searchResult.length > 0){
                     //清除正在执行的遍历过程，并还原select样式
-                    tree.clear("current","search")
+                    tree.clear(true,true)
                 }
                 switch (btn){
                     case "searchBtn1":
@@ -304,7 +302,7 @@ function clickBtn(target,tree){
                                     if(btn == "add"){
                                         tree.add(iptValue);
                                     }else {
-                                        tree.show("fold","current",iptValue,"search");
+                                        tree.show(iptValue);
                                     }
                                 }
                             })();
@@ -313,15 +311,15 @@ function clickBtn(target,tree){
                     case "toggleFold":
                         var toggleFold = document.getElementById("toggleFold");
                         if(toggleFold.innerHTML == "全部展开"){
-                            tree.foldAll("fold",true);
+                            tree.foldAll(true);
                             toggleFold.innerHTML = "全部折叠";
                         }else {
-                            tree.foldAll("fold",false);
+                            tree.foldAll(false);
                             toggleFold.innerHTML = "全部展开";
                         }
                         break;
                     default:
-                        tree.show("fold","current");
+                        tree.show();
                 }
             }
         })(tree, e.target.id)
@@ -335,7 +333,13 @@ function init(){
         btnBox = document.getElementById("btn-search-wrap");
     //实例化一个Tree
     var  bst = new Tree(root);
-    bst.selectEventListener("select","fold");
+    bst.style = {
+        current : "current",
+        select : "select",
+        search : "search",
+        fold : "fold"
+    };
+    bst.selectEventListener();
     clickBtn(btnBox,bst);
 }
 init();

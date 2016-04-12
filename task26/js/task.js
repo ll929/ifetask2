@@ -20,10 +20,10 @@ $(document).ready(function () {
     }
 });
 
-/**
- * 飞船
- */
 $(document).ready(function () {
+    /**
+     * 飞船
+     */
     function matrixToDegree(matrix) {
         var matrixArr = matrix.split(/\(|,/);
         var degreeCos = matrixArr[1],
@@ -35,50 +35,65 @@ $(document).ready(function () {
         return degree;
     }
     function animateFly(airship,id,action) {
-        var cssRules = document.styleSheets[0].cssRules,
-            styleSheets = document.styleSheets[0];
+        /*var cssRules = document.styleSheets[0].cssRules,
+            styleSheets = document.styleSheets[0];*/
+        var style = $("style"),
+            reg1 = new RegExp("@-webkit-keyframes start"+id+".*?}}"),
+            reg2 = new RegExp("@keyframes start"+id+".*?}}");
         var insert = function (startPosition,endPosition) {
-            if(styleSheets.insertRule){
+            /*if(styleSheets.insertRule){
                 styleSheets.insertRule("@keyframes start" +id+ "{" + "0%{transform: rotate("+startPosition+"deg)}100%{transform: rotate("+endPosition+"deg)}" + "}", id)
             }else if (styleSheets.addRule) {
                 styleSheets.addRule("@keyframes start"+id, "0%{transform: rotate(90deg)}100%{transform: rotate(360deg)}", id);
-            }
+            }*/
+            style.html(style.html()
+                +"@keyframes start" +id+ "{" + "0%{transform: rotate("+startPosition+"deg)}100%{transform: rotate("+endPosition+"deg)}" + "}"
+                +"@-webkit-keyframes start" +id+ "{" + "0%{-webkit-transform: rotate("+startPosition+"deg)}100%{-webkit-transform: rotate("+endPosition+"deg)}" + "}"
+            );
         };
         var remove = function () {
-            if(styleSheets.deleteRule){
+            /*if(styleSheets.deleteRule){
                 styleSheets.deleteRule(id);
             }else if(styleSheets.removeRule) {
                 styleSheets.removeRule(id);
-            }
+            }*/
+            style.html(style.html().replace(reg1,"").replace(reg2,""));
         };
 //start
-        if(action == "run"){console.log(id)
-            if(cssRules[id].name != "start"+id){
+        if(action == "run"){
+            if(!reg2.test(style.html())){
                 insert(0,360);
             }
             airship.css({
-                "animation-name":"start"+id,
+                /*"animation-name":"start"+id,
                 "animation-duration":"13s",
-                "mozAnimationDuration":"13s"
+                "mozAnimation-duration":"13s",*/
+                "-webkit-animation": "start"+id+" 13s infinite linear",
+                "animation":"start"+id+" 13s infinite linear",
+                "background":"url('./images/rocket_1.png') no-repeat"
             });
         }else if (action == "stop"){
             var endPosition = airship.css("transform");
             airship.css({
                 "animation-name":"",
                 "animation-duration":"",
-                "transform":endPosition
+                "transform":endPosition,
+                "background":"url('./images/rocket_0.png') no-repeat"
             });
-            if(cssRules[id].name == "start"+id){
+            //if(cssRules[id].name == "start"+id){
                 remove();
-            }
+           // }
             insert(matrixToDegree(endPosition),matrixToDegree(endPosition)+360);
         }else if (action == "destroy"){
-            if(cssRules[id].name == "start"+id){
+            //if(cssRules[id].name == "start"+id){
                 remove();
-            }
+           // }
         }
     }
-   function Airship(id) {
+
+    var message = new Events();
+
+    function Airship(id) {
        this.id = id;
        this.state = "stopping";
        this.energy = 100;
@@ -91,7 +106,7 @@ $(document).ready(function () {
    }
     Airship.prototype = {
         powerSystem :　function (action) {
-            if(action && this.state == "stopping"){
+            if(action == "run" && this.state == "stopping"){
                 this.state = "running";
                 var that = this;
                 var consumeEnergy = function () {
@@ -111,10 +126,28 @@ $(document).ready(function () {
                 };
                 consumeEnergy();
                 animateFly(this.airship,this.id,"run");
-            }else if (!action && this.state == "running"){
+            }else if (action == "stop" && this.state == "running"){
                 this.state = "stopping";
                 animateFly(this.airship,this.id,"stop");
             }
+        },
+        receiveMessage : function () {
+            var that = this;
+            message.listen("china",function (data) {
+                if(data.id  == that.id){
+                    switch (data.commond){
+                        case "run":
+                            that.powerSystem("run");
+                            break;
+                        case "stop":
+                            that.powerSystem("stop");
+                            break;
+                        case "destroy":
+                            that.selfDestructSystem();
+                    }
+                }
+
+            })
         },
         energySystem : function () {
             var that = this,
@@ -133,7 +166,7 @@ $(document).ready(function () {
         },
         selfDestructSystem : function () {
             this.airship.remove();
-            var cssRules = document.styleSheets[0].cssRules,
+/*            var cssRules = document.styleSheets[0].cssRules,
                 styleSheets = document.styleSheets[0];
             if(cssRules[this.id].name == "start"+this.id){
                 console.log(cssRules[this.id].name)
@@ -142,16 +175,51 @@ $(document).ready(function () {
                 }else if(styleSheets.removeRule) {
                     styleSheets.removeRule(this.id);
                 }
-            }
-            //animateFly(this.airship,this.id,"remove");
+            }*/
+            animateFly(this.airship,this.id,"destroy");
+            this.state = "stopping";
         }
     };
-    window.Airship = Airship;
-});
-/**
- * 指挥官
- */
-$(document).ready(function () {
+
+    /**
+     * 观察者与发布者
+     */
+    function Events() {
+        var obj = {};
+        this.listen = function (channel, eventfn) {
+            if(obj[channel] != null){
+                obj[channel].push(eventfn)
+            }else {
+                obj[channel] = [];
+                obj[channel].push(eventfn)
+            }
+        };
+        this.trigger = function (channel,data) {
+            if(obj[channel] == null){
+                obj[channel] == [];
+            }
+            for (var i = 0;i < obj[channel].length;i++) {
+                if (obj[channel][i].call(this,data) === false) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    /**
+     * 介质
+     */
+    function mediator(data) {
+        var r = Math.random();
+        if(r < 0.3){
+            console.log("丢包");
+        }else {
+            setTimeout(function () {message.trigger("china",data)},1000)
+        }
+    }
+    /**
+     * 指挥官
+     */
     var commander = {
         airship : {
             length : 0
@@ -160,26 +228,26 @@ $(document).ready(function () {
             var that = this;
             return $("<button class='start'>开始飞行</button>")
                 .click(function () {
-                    that.airship[id].powerSystem(true);
+                    that.sentMessage({id:id,commond:"run"})
                 })
         },
         stop : function (id) {
             var that = this;
             return $("<button class='stop'>停止飞行</button>")
                 .click(function () {
-                    that.airship[id].powerSystem(false);
+                    that.sentMessage({id:id,commond:"stop"})
                 })
         },
         destroy : function (id) {
             var that = this;
             return $("<button class='destroy'>自毁</button>")
                 .click(function (e) {
-                    that.airship[id].selfDestructSystem();
+                    that.sentMessage({id:id,commond:"destroy"})
                     $(this).parent().remove();
                     that.airship[id] = null;
                     --that.airship.length;
                 })
-        },         　
+        },
         createAirship : function () {
             var newAirship = $("#newAirship");
             var that = this;
@@ -196,10 +264,14 @@ $(document).ready(function () {
                 }
                 that.airship[id] = new Airship(id);
                 that.airship[id].energySystem();
+                that.airship[id].receiveMessage();
                 var airshipSystem = $("#airshipSystem");
                 var btn = $("<span>对"+id+"号飞船下达指令：</span>");
                 airshipSystem.append($("<div></div>").append(btn).append(that.start(id)).append(that.stop(id)).append(that.destroy(id)));
             })
+        },
+        sentMessage : function (data) {
+            mediator(data);
         }
     };
     commander.createAirship();

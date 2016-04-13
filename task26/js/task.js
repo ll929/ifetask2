@@ -164,7 +164,10 @@ $(document).ready(function () {
             var addEnergy = function () {
                 energyShow.html(that.energy);
                 that.energy+=2;
-                setTimeout(addEnergy,1000);
+                var add = setTimeout(addEnergy,1000);
+                if(that.state == "none"){
+                    clearTimeout(add);
+                }
                 that.energy > 100?that.energy = 100:void(0);
             };
             addEnergy();
@@ -173,7 +176,7 @@ $(document).ready(function () {
         selfDestructSystem : function () {
             this.airship.remove();
             animateFly(this.airship,this.id,"destroy");
-            this.state = "stopping";
+            this.state = "none";
         }
     };
 
@@ -291,7 +294,7 @@ $(document).ready(function () {
      * 模拟控制台输出信息
      */
     function ShowCommondInformation() {
-        var parent = $("#commond-information");
+        var parent = $("#commondInformation");
         this.log = function (data) {
             parent.prepend($("<p class='log'>>"+data+"</p>"))
         };

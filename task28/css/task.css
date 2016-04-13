@@ -117,3 +117,32 @@ body{
 #commondInformation>.info{
     color: rgba(0,255,0,.7);
 }
+#showState{
+    border: 1px solid #00cc00;
+    width: 100%;
+    height: 190px;
+    padding-top: 20px;
+}
+#showStateTable{
+    width: 100%;
+    font-size: 15px;
+    vertical-align: middle;
+    text-align: center;
+}
+#showStateTable tr{
+    height: 30px;
+}
+#showStateTable tr.running{
+    height: 30px;
+    color: rgba(0,255,0,.7);
+}
+#showStateTable tr.stopping{
+    height: 30px;
+    color: rgba(255,0,0,.7);
+}
+#showStateTable td{
+    border: 1px solid #5a5b5b;
+}
+#showStateTable tr:first-child{
+    background-color: #5a5b5b;
+}

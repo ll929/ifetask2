@@ -46,10 +46,14 @@ $(document).ready(function () {
      * @param id  飞船id
      * @param action 飞船命令
      */
-    function animateFly(airship,id,action) {
+    function animateFly(airship,id,action,speed) {
         var style = $("style"),
             reg1 = new RegExp("@-webkit-keyframes start"+id+".*?}}"), //匹配当前飞船的动画style
             reg2 = new RegExp("@keyframes start"+id+".*?}}");
+        //高中公式
+        var GM = 3375000;
+        var radius = Math.floor(GM/(speed*speed));
+        var cycle = Math.floor(2*Math.PI*radius/speed);
         //向页面插入keyframes
         var insert = function (startPosition,endPosition) {
             style.html(style.html()
@@ -63,8 +67,8 @@ $(document).ready(function () {
             case "run":
                 if(!reg2.test(style.html())){insert(0,360);}
                 airship.css({
-                    "-webkit-animation": "start"+id+" 13s infinite linear",
-                    "animation":"start"+id+" 13s infinite linear",
+                    "-webkit-animation": "start"+id+" "+cycle+"s infinite linear",
+                    "animation":"start"+id+" "+cycle+"s infinite linear",
                     "background":"url('./images/rocket_1.png') no-repeat"
                 });
                 break;
@@ -94,16 +98,29 @@ $(document).ready(function () {
      * 飞船
      * @param id 飞船id
      */
-    function Airship(id) {
-       this.id = id;
-       this.state = "stopping";
-       this.energy = 100;
-       this.airship = (function (energy) {
+    function Airship(id,speed,energyC,energyS) {
+        this.id = id;
+        this.speed = speed;
+        this.energyS = energyS;
+        this.energyC = energyC;
+        this.state = "stopping";
+        this.energy = 100;
+        this.airship = (function (fullEnergy) {
            var space = $("#space");
-           var airshipHtml = $("<div class='airship airship-"+id+"'><p class='energy'>"+id+"号-<span>"+energy+"</span>%</p></div>");
+           var airshipHtml = $("<div class='airship airship-"+id+"'><p class='energy'>"+id+"号-<span>"+fullEnergy+"</span>%</p></div>");
+            //高中公式
+            var GM = 3375000;
+            var radius = Math.floor(GM/(speed*speed));
+            console.log(radius)
+            airshipHtml.css({
+                "width":(2*radius)+"px",
+                "height":(2*radius)+"px",
+                "margin-left":(-radius)+"px",
+                "margin-top":(-radius)+"px"
+            });
            space.append(airshipHtml);
            return airshipHtml;
-       })(this.energy);
+        })(this.energy);
    }
     Airship.prototype = {
         //动力系统
@@ -118,8 +135,8 @@ $(document).ready(function () {
                         clearTimeout(consume);
                         consume = null;
                     }
-                    if(that.energy > 4){
-                        that.energy-=4;
+                    if(that.energy > that.energyC){
+                        that.energy-=that.energyC;
                     }else{
                         that.energy = 0;
                         clearTimeout(consume);
@@ -128,7 +145,7 @@ $(document).ready(function () {
                     }
                 };
                 consumeEnergy();
-                animateFly(this.airship,this.id,"run");
+                animateFly(this.airship,this.id,"run",this.speed);
             }
             //如果当前接收到"stop"指令且飞船是运行的
             else if (action == "stop" && this.state == "running"){
@@ -163,7 +180,7 @@ $(document).ready(function () {
                 energyShow = this.airship.children().children();
             var addEnergy = function () {
                 energyShow.html(that.energy);
-                that.energy+=2;
+                that.energy+=that.energyS;
                 setTimeout(addEnergy,1000);
                 that.energy > 100?that.energy = 100:void(0);
             };
@@ -230,6 +247,16 @@ $(document).ready(function () {
             id : 0,
             length : 0
         },
+        power : {
+            "前进号" : {"速度":115,"能耗":5},
+            "奔腾号" : {"速度":130,"能耗":6},
+            "超越号" : {"速度":150,"能耗":8}
+        },
+        energy : {
+            "劲量型" : {"补能":2},
+            "光能型" : {"补能":3},
+            "永久型" : {"补能":4}
+        },
         //运行按钮
         run : function (id) {
             var that = this;
@@ -259,22 +286,47 @@ $(document).ready(function () {
                 })
         },
         //创建新飞船按钮
+        createSelectSystem : function () {
+            var selectPower = $("#selectSystem>.powerBox>label>div"),
+                selectEnergy = $("#selectSystem>.energyBox>label>div"),
+                selectPowerHtml = "",selectEnergyPower = "";
+            for (var key in this.power){
+                selectPowerHtml+="<p><input type='radio' value='"+key+"' name='power'>"+key+"(速度"+this.power[key]["速度"]+"px/s，能耗"+this.power[key]["能耗"]+"%/s)</p>"
+            }
+            for (var key in this.energy){
+                selectEnergyPower+="<p><input type='radio' value='"+key+"' name='energy'>"+key+"(补充能速度"+this.energy[key]["补能"]+"%/s)</p>"
+            }
+            selectPower.html(selectPowerHtml);
+            selectEnergy.html(selectEnergyPower);
+        },
         createAirship : function () {
             var newAirship = $("#newAirship");
             var that = this;
             newAirship.click(function () {
-                if(that.airship.length < 4){
-                    var id = ++that.airship.id;
-                    that.airship.length++;
-                    that.airship[id] = new Airship(id);
-                    that.airship[id].energySystem();
-                    that.airship[id].receiveMessage();
-                    console.log("创建"+id+"号飞船");
-                    showMessage.log("创建"+id+"号飞船");
-                    var airshipSystem = $("#airshipSystem");
-                    var btn = $("<span>对"+id+"号飞船下达指令：</span>");
-                    airshipSystem.append($("<div></div>").append(btn).append(that.run(id)).append(that.stop(id)).append(that.destroy(id)));
-                    that.airship.length == 4?newAirship.hide():void(0);
+                /*console.log($("#selectSystem input[name='power']:checked").val());
+                console.log($("#selectSystem input[name='energy']:checked").val());*/
+                var power = $("#selectSystem input[name='power']:checked").val(),
+                    energy= $("#selectSystem input[name='energy']:checked").val();
+                if(power && energy){
+                    if(that.airship.length < 4){
+                        var id = ++that.airship.id;
+                        that.airship.length++;
+                        that.airship[id] = new Airship(id,that.power[power]["速度"],that.power[power]["能耗"],that.energy[energy]["补能"]);
+                        that.airship[id].energySystem();
+                        that.airship[id].receiveMessage();
+                        console.log("创建"+id+"号飞船<br>动力系统："+power+"<br>能源系统："+energy);
+                        showMessage.log("创建"+id+"号飞船<br>>>>动力系统："+power+"<br>>>>能源系统："+energy);
+                        var airshipSystem = $("#airshipSystem");
+                        var btn = $("<span>对"+id+"号飞船下达指令：</span>");
+                        airshipSystem.append($("<div></div>").append(btn).append(that.run(id)).append(that.stop(id)).append(that.destroy(id)));
+                        that.airship.length == 4?newAirship.hide():void(0);
+                    }
+                }else if(!power && !energy){
+                    alert("请选择动力和能源系统！")
+                }else if (!power && energy){
+                    alert("请选择动力系统！")
+                }else if (power && !energy){
+                    alert("请选择能源系统！")
                 }
             })
         },
@@ -285,6 +337,9 @@ $(document).ready(function () {
             showMessage.log("向"+data.id+"号飞船发出"+data.commond+"指令");
         }
     };
+
+    //创建选择面板
+    commander.createSelectSystem();
     //监听创建飞船按钮
     commander.createAirship();
     /**

@@ -19,7 +19,7 @@ body{
 }
 #console{
     box-sizing: border-box;
-    border: 1px solid #00cc00;
+    /*border: 1px solid #00cc00;*/
     position: absolute;
     height: 100%;
     width: 100%;
@@ -118,13 +118,13 @@ body{
     margin-left: -250px;
     margin-top: -250px;
 }
-#commond-information{
+#commondInformation{
     position: absolute;
     padding: 35px;
 }
-#commond-information>.warn{
+#commondInformation>.warn{
     color: rgba(255,0,0,.7);
 }
-#commond-information>.info{
+#commondInformation>.info{
     color: rgba(0,255,0,.7);
 }

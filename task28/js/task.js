@@ -76,8 +76,10 @@ $(document).ready(function () {
      * 飞船
      * @param id 飞船id
      */
-    function Airship(id,speed,energyC,energyS) {
+    function Airship(id,speed,energyC,energyS,powerModel,energyModel) {
         this.id = id;
+        this.powerModel = powerModel;
+        this.energyModel = energyModel;
         this.speed = speed;
         this.energyS = energyS;
         this.energyC = energyC;
@@ -130,30 +132,51 @@ $(document).ready(function () {
                 animateFly(this.airship,this.id,"stop");
             }
         },
+        //进制转换
+        adapter : function (data,toHex) {
+            if(toHex == 10){
+                var id = parseInt(data.substr(0,data.length-4),2).toString(10),
+                    commond = data.substr(-4);
+                var jsonData = {
+                    id : id
+                };
+                switch (commond){
+                    case "0001":
+                        jsonData.commond ="run";
+                        break;
+                    case "0010":
+                        jsonData.commond ="stop";
+                        break;
+                    case "1110":
+                        jsonData.commond ="destroy";
+                        break;
+                }
+                return jsonData;
+            }else if (toHex == 2){
+                var binaryData = "";
+                var id = this.id.toString(2);
+                binaryData+=(Array(4).join(0) + id).slice(-4);
+                switch (this.state){
+                    case "running":
+                        binaryData+="0001";
+                        break;
+                    case "stopping":
+                        binaryData+="0010"
+                        break;
+                    default:
+                        binaryData+="0010"
+                        break;
+                }
+                binaryData+=(Array(8).join(0) + this.energy.toString(2)).slice(-8);
+                return binaryData;
+            }
+        },
         //信息接收系统
         receiveMessage : function () {
             var that = this;
             //监听china频道
             message.listen("china",function (data) {
-                var adapter = (function (data) {
-                    var id = parseInt(data.substr(0,data.length-4),2).toString(10),
-                        commond = data.substr(-4);
-                    var jsonData = {
-                        id : id
-                    };
-                    switch (commond){
-                        case "0001":
-                            jsonData.commond ="run";
-                            break;
-                        case "0010":
-                            jsonData.commond ="stop";
-                            break;
-                        case "1110":
-                            jsonData.commond ="destroy";
-                            break;
-                    }
-                    return jsonData;
-                })(data);
+                var adapter = that.adapter(data,10);
                 if(adapter.id  == that.id){
                     switch (adapter.commond){
                         case "run":
@@ -169,6 +192,25 @@ $(document).ready(function () {
                     showMessage.info(adapter.id+"号飞船成功接收"+adapter.commond+"指令");
                 }
             })
+        },
+        //发送信息
+        sentMessage : function () {
+            var data = {};
+            var that = this;
+            function ssid() {
+                data={
+                    id : that.id,
+                    state : that.state,
+                    energy : that.energy
+                };
+                var adapter = that.adapter(data,2);
+                BUS(adapter,"toPlanet");
+                var ss = setTimeout(ssid,1000);
+                if(that.state == "none"){
+                    clearTimeout(ss)
+                }
+            }
+            ssid();
         },
         //能源系统
         energySystem : function () {
@@ -227,26 +269,34 @@ $(document).ready(function () {
     /**
      * 介质
      */
-    function BUS(data) {
+    function BUS(data,dir) {
         var r = Math.random();
-        if(r < 0.1){
-            setTimeout(function () {
-                console.warn("向飞船发送"+data+"指令丢包");
-                showMessage.warn("向飞船发送"+data+"指令丢包");
-                console.log("尝试重新向飞船发送"+data+"指令");
-                showMessage.log("尝试重新向飞船发送"+data+"指令");
-                BUS(data)
-            },300);
-        }else {
-            setTimeout(function () {message.trigger("china",data)},300)
+        if(dir == "toSpace"){
+            if(r < 0.1){
+                setTimeout(function () {
+                    console.warn("向飞船发送"+data+"指令丢包");
+                    showMessage.warn("向飞船发送"+data+"指令丢包");
+                    console.log("尝试重新向飞船发送"+data+"指令");
+                    showMessage.log("尝试重新向飞船发送"+data+"指令");
+                    BUS(data,dir)
+                },300);
+            }else {
+                setTimeout(function () {message.trigger("china",data)},300)
+            }
+        }else if(dir == "toPlanet"){
+            if(r < 0.1){
+                setTimeout(function () {BUS(data,dir)},300);
+            }else {
+                setTimeout(function () {message.trigger("space",data)},300)
+            }
         }
+
     }
     /**
      * 指挥官
      */
     var commander = {
         airship : {
-            id : 0,
             length : 0
         },
         power : {
@@ -283,7 +333,8 @@ $(document).ready(function () {
                     that.sentMessage({id:id,commond:"destroy"});
                     $("#newAirship").show();
                     $(this).parent().remove();
-                    delete that.airship[id];
+                    $($("#showStateTable tbody").children()[id]).children().remove();
+                    that.airship[id] = null;
                     that.airship.length--;
                 })
         },
@@ -304,23 +355,31 @@ $(document).ready(function () {
         createAirship : function () {
             var newAirship = $("#newAirship");
             var that = this;
+            for(var i=1;i<=4;i++){
+                this.airship[i] = null;
+            }
             newAirship.click(function () {
                 var power = $("#selectSystem input[name='power']:checked").val(),
                     energy= $("#selectSystem input[name='energy']:checked").val();
                 if(power && energy){
-                    if(that.airship.length < 4){
-                        var id = ++that.airship.id;
-                        that.airship.length++;
-                        that.airship[id] = new Airship(id,that.power[power]["速度"],that.power[power]["能耗"],that.energy[energy]["补能"]);
-                        that.airship[id].energySystem();
-                        that.airship[id].receiveMessage();
-                        console.log("创建"+id+"号飞船<br>动力系统："+power+"<br>能源系统："+energy);
-                        showMessage.log("创建"+id+"号飞船<br>>>>动力系统："+power+"<br>>>>能源系统："+energy);
-                        var airshipSystem = $("#airshipSystem");
-                        var btn = $("<span>对"+id+"号飞船下达指令：</span>");
-                        airshipSystem.append($("<div></div>").append(btn).append(that.run(id)).append(that.stop(id)).append(that.destroy(id)));
-                        that.airship.length == 4?newAirship.hide():void(0);
+                    var id;
+                    for (var i = 1;i<=4;i++){
+                        if(!that.airship[i]){
+                            id = i;
+                            break;
+                        }
                     }
+                    that.airship.length++;
+                    that.airship[id] = new Airship(id,that.power[power]["速度"],that.power[power]["能耗"],that.energy[energy]["补能"],power,energy);
+                    that.airship[id].energySystem();
+                    that.airship[id].receiveMessage();
+                    that.airship[id].sentMessage();
+                    console.log("创建"+id+"号飞船<br>动力系统："+power+"<br>能源系统："+energy);
+                    showMessage.log("创建"+id+"号飞船<br>>>>动力系统："+power+"<br>>>>能源系统："+energy);
+                    var airshipSystem = $("#airshipSystem");
+                    var btn = $("<span>对"+id+"号飞船下达指令：</span>");
+                    airshipSystem.append($("<div></div>").append(btn).append(that.run(id)).append(that.stop(id)).append(that.destroy(id)));
+                    that.airship.length == 4?newAirship.hide():void(0);
                 }else if(!power && !energy){
                     alert("请选择动力和能源系统！")
                 }else if (!power && energy){
@@ -330,9 +389,9 @@ $(document).ready(function () {
                 }
             })
         },
-        //发送信息系统
-        sentMessage : function (data) {
-            var adapter = (function (data) {
+        //进制转换
+        adapter : function (data,toHex) {
+            if(toHex == 2){
                 var binaryData = data.id.toString(2);
                 switch (data.commond){
                     case "run":
@@ -346,13 +405,50 @@ $(document).ready(function () {
                         break;
                 }
                 return binaryData;
-            })(data);
-            BUS(adapter);
+            }else if(toHex == 10){
+
+            }
+        },
+        //发送信息系统
+        sentMessage : function (data) {
+            var adapter = this.adapter(data,2);
+            BUS(adapter,"toSpace");
             console.log(">>Adapter转换指令为"+adapter+"<br>向"+data.id+"号飞船发出"+data.commond+"指令");
             showMessage.log(">>Adapter转换指令为"+adapter+"<br>向"+data.id+"号飞船发出"+data.commond+"指令");
+        },
+        //信息处理系统
+        showMessage : function () {
+            var that = this;
+            var showStateTable = $("#showStateTable tbody"),td;
+            var jsonData = {};
+            message.listen("space",function (data) {
+                var id = parseInt(data.substr(0,4),2).toString(10),
+                    energy = parseInt(data.substr(9,8),2).toString(10),
+                    powerModel,
+                    energyModel,
+                    state;
+                if(that.airship[id]){
+                    powerModel = that.airship[id].powerModel;
+                    energyModel = that.airship[id].energyModel;
+                }
+                if(powerModel && energyModel){
+                    state = data.substr(4,4) == "0001"?"running":"stopping";
+                    jsonData = {
+                        id : id,
+                        powerModel : powerModel,
+                        energyModel : energyModel,
+                        energy : energy,
+                        state : state
+                    };
+                    td = "<td>"+id+"号</td><td>"+powerModel+"</td><td>"+energyModel+"</td><td>"+state+"</td><td>"+energy+"%</td>";
+                    $(showStateTable.children()[id]).html(td).removeClass("stopping","running").addClass(state);
+                }
+            })
         }
     };
 
+    //展示信息
+    commander.showMessage();
     //创建选择面板
     commander.createSelectSystem();
     //监听创建飞船按钮

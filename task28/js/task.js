@@ -188,7 +188,6 @@ $(document).ready(function () {
                         case "destroy":
                             that.selfDestructSystem();
                     }
-                    console.info(adapter.id+"号飞船成功接收"+adapter.commond+"指令");
                     showMessage.info(adapter.id+"号飞船成功接收"+adapter.commond+"指令");
                 }
             })
@@ -274,9 +273,7 @@ $(document).ready(function () {
         if(dir == "toSpace"){
             if(r < 0.1){
                 setTimeout(function () {
-                    console.warn("向飞船发送"+data+"指令丢包");
                     showMessage.warn("向飞船发送"+data+"指令丢包");
-                    console.log("尝试重新向飞船发送"+data+"指令");
                     showMessage.log("尝试重新向飞船发送"+data+"指令");
                     BUS(data,dir)
                 },300);
@@ -374,7 +371,6 @@ $(document).ready(function () {
                     that.airship[id].energySystem();
                     that.airship[id].receiveMessage();
                     that.airship[id].sentMessage();
-                    console.log("创建"+id+"号飞船<br>动力系统："+power+"<br>能源系统："+energy);
                     showMessage.log("创建"+id+"号飞船<br>>>>动力系统："+power+"<br>>>>能源系统："+energy);
                     var airshipSystem = $("#airshipSystem");
                     var btn = $("<span>对"+id+"号飞船下达指令：</span>");
@@ -413,7 +409,6 @@ $(document).ready(function () {
         sentMessage : function (data) {
             var adapter = this.adapter(data,2);
             BUS(adapter,"toSpace");
-            console.log(">>Adapter转换指令为"+adapter+"<br>向"+data.id+"号飞船发出"+data.commond+"指令");
             showMessage.log(">>Adapter转换指令为"+adapter+"<br>向"+data.id+"号飞船发出"+data.commond+"指令");
         },
         //信息处理系统
@@ -459,13 +454,16 @@ $(document).ready(function () {
     function ShowCommondInformation() {
         var parent = $("#commondInformation");
         this.log = function (data) {
-            parent.prepend($("<p class='log'>>"+data+"</p>"))
+            parent.prepend($("<p class='log'>>"+data+"</p>"));
+            console.log(data);
         };
         this.warn = function (data) {
-            parent.prepend($("<p class='warn'>>"+data+"</p>"))
+            parent.prepend($("<p class='warn'>>"+data+"</p>"));
+            console.warn(data);
         };
         this.info = function (data) {
-            parent.prepend($("<p class='info'>>"+data+"</p>"))
+            parent.prepend($("<p class='info'>>"+data+"</p>"));
+            console.info(data);
         }
     }
 });

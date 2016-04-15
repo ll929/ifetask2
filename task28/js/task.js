@@ -123,8 +123,8 @@ $(document).ready(function () {
                         that.powerSystem("stop");
                     }
                 };
-                consumeEnergy();
                 animateFly(this.airship,this.id,"run",this.speed);
+                consumeEnergy();
             }
             //如果当前接收到"stop"指令且飞船是运行的
             else if (action == "stop" && this.state == "running"){
